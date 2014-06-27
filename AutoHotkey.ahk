@@ -1,3 +1,5 @@
+SetTitleMatchMode RegEx
+
 ^!n::
 IfWinExist Untitled - Notepad
 	WinActivate
@@ -7,7 +9,7 @@ return
 
 #a:: Winset, AlwaysOnTop, Toggle, A
 
-; Assign Ctrl-Alt-R as a hotkey to restart the script.
+; Ctrl-Alt-R as a hotkey to restart the script.
 ^!r::Reload
 
 ; Ctrl-Alt-C to start console, use windows explorer's path when active
@@ -26,6 +28,18 @@ else
 		Run "C:\Program Files\ConEmu\ConEmu64.exe" /dir c:\gitdata
 	return
 }
+
+; visual studio
+#IfWinActive, .* - Microsoft Visual Studio
+	; Ctrl-Alt-/ to remove and sort usings and format document
+	; note: you should manually assign ctrl-alt-/ as removeandsort shortcut
+	^!/::
+	Send ^!/	; remove and sort usings
+	Send ^ed 	; format document
+	return
+	; Ctrl-Click to go to definition
+	^LButton::Send {click}{f12}
+#IfWinActive
 
 /********************************************************************************************
 	LIBS
@@ -64,9 +78,10 @@ Explorer_GetPath(hwnd="")
 		return A_Desktop
 	path := window.LocationURL
 	path := RegExReplace(path, "ftp://.*@","ftp://")
-	StringReplace, path, path, file:///
+	StringReplace, path, path, file:
+	StringReplace, path, path, ///
 	StringReplace, path, path, /, \, All 
-	
+
 	; thanks to polyethene
 	Loop
 		If RegExMatch(path, "i)(?<=%)[\da-f]{1,2}", hex)
